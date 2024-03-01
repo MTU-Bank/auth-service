@@ -1,4 +1,5 @@
 ﻿using MTUBankBase.Config;
+using System.Text.Json.Serialization;
 
 namespace MTUAuthService
 {
@@ -13,5 +14,12 @@ namespace MTUAuthService
         public int dbPort { get; set; }
         public string dbUser { get; set; }
         public string dbPass { get; set; }
+        public string dbName { get; set; }
+
+        [JsonIgnore]
+        public string ConnectionString
+        {
+            get { return $"Server={dbHost};Database={dbName};User={dbUser};Password={dbPass};"; }
+        }
     }
 }

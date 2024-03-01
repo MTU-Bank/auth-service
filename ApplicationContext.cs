@@ -13,12 +13,11 @@ namespace MTUAuthService
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(
-                Program.connectionString,
-                ServerVersion.AutoDetect(Program.connectionString)
+                Program.serviceConfig.ConnectionString,
+                ServerVersion.AutoDetect(Program.serviceConfig.ConnectionString)
             );
         }
 
         public DbSet<User> Users { get; set; }
-        ы
     }
 }
