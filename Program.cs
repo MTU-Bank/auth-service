@@ -34,20 +34,6 @@ namespace MTUAuthService
         }
 
     }
-    /*
-    
-    public class Checker
-    {
-        public static AuthResult Check(TwoFARequest TwoFACode)
-        {
-            
-            var result = new AuthResult() { };
-            return Verification.TwoFactorAuth.VerifyOTP();
-        }
-    }
-    
-    [Table("users")]
-    */
 
     internal class Program
     {
