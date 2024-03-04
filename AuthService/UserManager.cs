@@ -1,4 +1,5 @@
 ﻿using EmbedIO;
+using Microsoft.EntityFrameworkCore;
 using MTUBankBase.Auth.Models;
 using MTUBankBase.Database.Models;
 using System;
@@ -16,10 +17,10 @@ namespace MTUAuthService.AuthService
         /// Данный метод регистрирует пользователя в системе
         /// </summary>
         /// <param name="user"></param>
-        public static User RegisterUser(RegisterRequest req)
+        public static async Task<User> RegisterUser(RegisterRequest req)
         {
             // making sure the user doesn't already exist
-            var userExists = DoesUserExist(req) is null;
+            var userExists = await DoesUserExist(req) is null;
             if (userExists) throw new HttpException(409, "Such user account already exists");
 
             using (ApplicationContext db = new ApplicationContext())
@@ -29,7 +30,7 @@ namespace MTUAuthService.AuthService
                 userReq.PasswordHash = GeneratePwdHash(userReq, passwordReq);
 
                 db.Users.Add(userReq);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
 
             return req;
@@ -40,12 +41,32 @@ namespace MTUAuthService.AuthService
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public static User GetUser(string uid)
+        public static async Task<User?> GetUser(string uid)
         {
             using (ApplicationContext db = new ApplicationContext())
             {
                 var userApplicable = from z in db.Users where z.Id == uid select z;
-                return userApplicable.FirstOrDefault();
+                return await userApplicable.FirstOrDefaultAsync();
+            }
+        }
+
+        /// <summary>
+        /// Данный метод создаёт токен для пользователя
+        /// </summary>
+        /// <param name="u"></param>
+        /// <returns></returns>
+        public static async Task<Token> IssueTokenForUser(User u, TokenType type)
+        {
+            if (u is null) throw new ArgumentNullException(nameof(u));
+
+            // create an appropriate token
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var randomString = RandomProvider.GenerateRandomUserToken();
+                var newToken = new Token() { CreationDate = DateTime.Now, Owner = u, TokenType = type, TokenValue = randomString };
+                db.Tokens.Add(newToken);
+                await db.SaveChangesAsync();
+                return newToken;
             }
         }
 
@@ -54,12 +75,12 @@ namespace MTUAuthService.AuthService
         /// </summary>
         /// <param name="u"></param>
         /// <returns></returns>
-        public static User? DoesUserExist(User u)
+        public static async Task<User?> DoesUserExist(User u)
         {
             using (ApplicationContext db = new ApplicationContext())
             {
                 var possibleUser = from z in db.Users where z.Id == u.Id || z.PhoneNum == u.PhoneNum || z.Email == u.Email select z;
-                return possibleUser.FirstOrDefault();
+                return await possibleUser.FirstOrDefaultAsync();
             }
         }
 

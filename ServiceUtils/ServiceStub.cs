@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EmbedIO.WebApi;
+using MTUBankBase.Database.Models;
+using MTUBankBase.Auth;
 
 namespace MTUAuthService.ServiceUtils
 {
@@ -26,5 +28,10 @@ namespace MTUAuthService.ServiceUtils
 
         [Route(HttpVerbs.Get, "/disconnectService")]
         public async Task<string> DisconnectService() => "OK";
+
+        public Task<Token?> CurrentToken
+        {
+            get => AuthValidator.GetCurrentToken(HttpContext);
+        }
     }
 }

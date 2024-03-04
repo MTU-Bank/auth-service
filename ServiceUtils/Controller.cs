@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MTUBankBase.Auth.Models;
 using MTUAuthService.AuthService;
+using MTUBankBase.Database.Models;
 
 namespace MTUAuthService.ServiceUtils
 {
@@ -26,20 +27,38 @@ namespace MTUAuthService.ServiceUtils
             // attempting to register the user
             try
             {
-                var newUser = UserManager.RegisterUser(user);
+                var newUser = await UserManager.RegisterUser(user);
+
+                // now we generate a token for the user
+                var token = await UserManager.IssueTokenForUser(newUser, TokenType.Active);
+
+                // generate authresult
+                var ar = (AuthResult)newUser;
+                ar.Success = true;
+                ar.Token = token.TokenValue;
+
+                return ar;
             } catch (Exception ex)
             {
                 return new AuthResult() { Success = false, Error = ex.Message };
             }
-
-            return user;
         }
 
         [Route(HttpVerbs.Post, "/api/loginUser")]
         public async Task<AuthResult> LoginPerson([JsonData] AuthRequest EntUserPhone)
         {
+            // first we shall get the user requested
+            var user = await UserManager.GetUser(EntUserPhone.Phone);
 
-            return UserManager.GetUser(EntUserPhone);
+            if (user is null) return new AuthResult() { Success = false, Error = "User doesn't exist" };
+            
+            // check if 2FA is enabled
+            if (user.TwoFASecret is not null)
+            {
+                // create a 2FA token and ask user to enter 2FA info
+                var twoFAtoken = await UserManager.IssueTokenForUser(user, TokenType.TwoFA);
+
+            }
         }
 
         [Route(HttpVerbs.Post, "/api/2FA")]
