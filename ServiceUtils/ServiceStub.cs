@@ -33,5 +33,10 @@ namespace MTUAuthService.ServiceUtils
         {
             get => AuthValidator.GetCurrentToken(HttpContext);
         }
+
+        public bool LocalServiceAdmin
+        {
+            get => AuthValidator.ValidateServiceAdmin(HttpContext);
+        }
     }
 }

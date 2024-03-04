@@ -40,7 +40,7 @@ namespace MTUAuthService.AuthService
             return buffer;
         }
 
-        public static string GenerateRandomUserToken(int length = 32)
+        public static string GenerateRandomString(int length = 32)
         {
             var newBA = GenerateRandomBytes(length);
             return Convert.ToBase64String(newBA);

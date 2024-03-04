@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TwoStepsAuthenticator;
 
 namespace MTUAuthService.AuthService
 {
@@ -62,7 +63,7 @@ namespace MTUAuthService.AuthService
             // create an appropriate token
             using (ApplicationContext db = new ApplicationContext())
             {
-                var randomString = RandomProvider.GenerateRandomUserToken();
+                var randomString = RandomProvider.GenerateRandomString();
                 var newToken = new Token() { CreationDate = DateTime.Now, Owner = u, TokenType = type, TokenValue = randomString };
                 db.Tokens.Add(newToken);
                 await db.SaveChangesAsync();
@@ -84,6 +85,38 @@ namespace MTUAuthService.AuthService
             }
         }
 
+        public static async Task<AuthResult> Change2FAStatus(User user, bool enable)
+        {
+            // Generate a shared secret for the user
+            string sharedSecret = RandomProvider.GenerateRandomString(32);
+            // Store the shared secret in the user's database record
+            // StoreSharedSecretInDatabase(username, sharedSecret);
+
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                user.TwoFASecret = sharedSecret;
+                db.Entry(user).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+                return new AuthResult() { Success = true, Token = sharedSecret };
+            }
+        }
+
+        public static bool VerifyOTP(User user, string OTP)
+        {
+            // Retrieve the shared secret from the user's database record
+            string sharedSecret = user.TwoFASecret;
+
+            // Verify the user's entered OTP
+            var authenticator = new TimeAuthenticator();
+            return authenticator.CheckCode(sharedSecret, OTP);
+        }
+
+        /// <summary>
+        /// Данный метод выполняет хеширование пароля
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
         public static string GeneratePwdHash(User user, string pwd)
         {
             string rawPwd = $"{user.Id}{pwd}{user.Email}";
@@ -92,5 +125,7 @@ namespace MTUAuthService.AuthService
                 return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(rawPwd))).ToLower().Replace("-", "");
             }
         }
+
+        public static bool IsPasswordCorrect(User user, string pwd) => user.PasswordHash == GeneratePwdHash(user, pwd);
     }
 }

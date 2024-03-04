@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EmbedIO" Version="3.5.2" />
+    <PackageReference Include="TwoStepsAuthenticator" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EmbedIO\src\EmbedIO\EmbedIO.csproj" />
     <ProjectReference Include="..\MTUBankBase\MTUBankBase.csproj" />
   </ItemGroup>
 
