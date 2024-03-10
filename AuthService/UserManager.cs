@@ -21,13 +21,15 @@ namespace MTUAuthService.AuthService
         public static async Task<User> RegisterUser(RegisterRequest req)
         {
             // making sure the user doesn't already exist
-            var userExists = await DoesUserExist(req) is null;
+            var userExists = await DoesUserExist(req) is not null;
             if (userExists) throw new HttpException(409, "Such user account already exists");
 
             using (ApplicationContext db = new ApplicationContext())
             {
                 var passwordReq = req.Password;
                 var userReq = (User)req;
+                userReq.Id = Guid.NewGuid().ToString();
+                userReq.CreationDate = DateTime.Now;
                 userReq.PasswordHash = GeneratePwdHash(userReq, passwordReq);
 
                 db.Users.Add(userReq);
@@ -52,6 +54,20 @@ namespace MTUAuthService.AuthService
         }
 
         /// <summary>
+        /// Данный метод получает пользователя по номеру телефона
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static async Task<User?> GetUserByPhone(string phone)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                var userApplicable = from z in db.Users where z.PhoneNum == phone select z;
+                return await userApplicable.FirstOrDefaultAsync();
+            }
+        }
+
+        /// <summary>
         /// Данный метод создаёт токен для пользователя
         /// </summary>
         /// <param name="u"></param>
@@ -64,7 +80,7 @@ namespace MTUAuthService.AuthService
             using (ApplicationContext db = new ApplicationContext())
             {
                 var randomString = RandomProvider.GenerateRandomString();
-                var newToken = new Token() { CreationDate = DateTime.Now, Owner = u, TokenType = type, TokenValue = randomString };
+                var newToken = new Token() { CreationDate = DateTime.Now, OwnerId = u.Id, TokenType = type, TokenValue = randomString };
                 db.Tokens.Add(newToken);
                 await db.SaveChangesAsync();
                 return newToken;

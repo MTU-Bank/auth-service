@@ -10,7 +10,7 @@ namespace MTUAuthService
 {
     internal class Program
     {
-        public static ServiceConfig serviceConfig;
+        public static ServiceConfig serviceConfig = new ServiceConfig();
 
         static async Task Main(string[] args)
         {

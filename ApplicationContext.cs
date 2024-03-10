@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using MTUBankBase.Database.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,23 @@ namespace MTUAuthService
                 Program.serviceConfig.ConnectionString,
                 ServerVersion.AutoDetect(Program.serviceConfig.ConnectionString)
             );
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // "User" -> "OwnerId" (Account)
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.OwnerId)
+                .IsRequired();
+
+            // "Owner" -> "OwnerId" (Token)
+            modelBuilder.Entity<Token>()
+                .HasOne(a => a.Owner)
+                .WithMany()
+                .HasForeignKey(a => a.OwnerId)
+                .IsRequired();
         }
 
         public DbSet<User> Users { get; set; }

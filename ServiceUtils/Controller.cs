@@ -27,7 +27,7 @@ namespace MTUAuthService.ServiceUtils
                 var token = await UserManager.IssueTokenForUser(newUser, TokenType.Active);
 
                 // generate authresult
-                var ar = (AuthResult)newUser;
+                var ar = new AuthResult(newUser);
                 ar.Success = true;
                 ar.Token = token.TokenValue;
 
@@ -42,7 +42,7 @@ namespace MTUAuthService.ServiceUtils
         public async Task<AuthResult> LoginPerson([JsonData] AuthRequest EntUserPhone)
         {
             // first we shall get the user requested
-            var user = await UserManager.GetUser(EntUserPhone.Phone);
+            var user = await UserManager.GetUserByPhone(EntUserPhone.Phone);
 
             if (user is null) return new AuthResult() { Success = false, Error = "User doesn't exist" };
 
@@ -60,7 +60,7 @@ namespace MTUAuthService.ServiceUtils
 
             // if no, issue a proper token and let user in
             var token = await UserManager.IssueTokenForUser(user, TokenType.Active);
-            var ar = (AuthResult)user;
+            var ar = new AuthResult(user);
             ar.Success = true; ar.Token = token.TokenValue;
 
             return ar;
@@ -83,7 +83,7 @@ namespace MTUAuthService.ServiceUtils
             var newToken = await UserManager.IssueTokenForUser(userToken.Owner, TokenType.Active);
 
             // generate authresult
-            var ar = (AuthResult)userToken.Owner;
+            var ar = new AuthResult(userToken.Owner);
             ar.Success = true;
             ar.Token = newToken.TokenValue;
 
