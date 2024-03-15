@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using MTUBankBase.Database.Models;
+using MTUModelContainer.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,16 +27,8 @@ namespace MTUAuthService
                 .WithMany()
                 .HasForeignKey(a => a.OwnerId)
                 .IsRequired();
-
-            // "Owner" -> "OwnerId" (Token)
-            modelBuilder.Entity<Token>()
-                .HasOne(a => a.Owner)
-                .WithMany()
-                .HasForeignKey(a => a.OwnerId)
-                .IsRequired();
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Token> Tokens { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace MTUAuthService.ServiceUtils
             var server = new WebServer(o => o
                    .WithUrlPrefix(LocalService.BaseUrl)
                    .WithMode(HttpListenerMode.EmbedIO));
+            server.Options.JwtService = Program.jwtService;
 
             // add the ServiceStub inherited class as the handler for API requests
             server = server.WithWebApi("/", WebControllerMethods.AsJSON, m =>

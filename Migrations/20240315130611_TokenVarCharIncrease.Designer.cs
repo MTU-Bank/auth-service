@@ -4,6 +4,7 @@ using MTUAuthService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTUAuthService.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240315130611_TokenVarCharIncrease")]
+    partial class TokenVarCharIncrease
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,6 +63,32 @@ namespace MTUAuthService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("accounts");
+                });
+
+            modelBuilder.Entity("MTUModelContainer.Database.Models.Token", b =>
+                {
+                    b.Property<string>("TokenValue")
+                        .HasColumnType("varchar(768)")
+                        .HasColumnName("token");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("creationDate");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("owner");
+
+                    b.Property<int>("TokenType")
+                        .HasColumnType("int")
+                        .HasColumnName("type");
+
+                    b.HasKey("TokenValue");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("tokens");
                 });
 
             modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>
@@ -131,6 +160,17 @@ namespace MTUAuthService.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MTUModelContainer.Database.Models.Token", b =>
+                {
+                    b.HasOne("MTUModelContainer.Database.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>

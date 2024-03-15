@@ -1,10 +1,11 @@
 ﻿using EmbedIO;
 using Microsoft.EntityFrameworkCore;
-using MTUBankBase.Auth.Models;
-using MTUBankBase.Database.Models;
+using MTUModelContainer.Auth.Models;
+using MTUModelContainer.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,19 +73,12 @@ namespace MTUAuthService.AuthService
         /// </summary>
         /// <param name="u"></param>
         /// <returns></returns>
-        public static async Task<Token> IssueTokenForUser(User u, TokenType type)
+        public static async Task<string> IssueTokenForUser(User u, TokenType type)
         {
             if (u is null) throw new ArgumentNullException(nameof(u));
 
             // create an appropriate token
-            using (ApplicationContext db = new ApplicationContext())
-            {
-                var randomString = RandomProvider.GenerateRandomString();
-                var newToken = new Token() { CreationDate = DateTime.Now, OwnerId = u.Id, TokenType = type, TokenValue = randomString };
-                db.Tokens.Add(newToken);
-                await db.SaveChangesAsync();
-                return newToken;
-            }
+            return Program.jwtService.GenerateToken(u, type.ToString());
         }
 
         /// <summary>
@@ -143,5 +137,10 @@ namespace MTUAuthService.AuthService
         }
 
         public static bool IsPasswordCorrect(User user, string pwd) => user.PasswordHash == GeneratePwdHash(user, pwd);
+    }
+
+    public enum TokenType
+    {
+        Active, TwoFA
     }
 }
