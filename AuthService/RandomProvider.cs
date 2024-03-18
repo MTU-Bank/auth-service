@@ -45,5 +45,12 @@ namespace MTUAuthService.AuthService
             var newBA = GenerateRandomBytes(length);
             return Convert.ToBase64String(newBA);
         }
+
+        public static string GenerateRandom2FA(int length = 18)
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyz";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[Next(0, s.Length)]).ToArray());
+        }
     }
 }

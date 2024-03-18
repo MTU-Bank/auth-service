@@ -98,7 +98,7 @@ namespace MTUAuthService.AuthService
         public static async Task<AuthResult> Change2FAStatus(User user, bool enable)
         {
             // Generate a shared secret for the user
-            string sharedSecret = RandomProvider.GenerateRandomString(32);
+            string sharedSecret = RandomProvider.GenerateRandom2FA();
 
             // Store the shared secret in the user's database record
             using (ApplicationContext db = new ApplicationContext())
