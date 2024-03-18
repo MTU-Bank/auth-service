@@ -22,7 +22,7 @@ namespace MTUAuthService.AuthService
         public static async Task<User> RegisterUser(RegisterRequest req)
         {
             // making sure the user doesn't already exist
-            var userExists = await DoesUserExist(req) is not null;
+            var userExists = await GetRealUser(req) is not null;
             if (userExists) throw new HttpException(409, "Such user account already exists");
 
             using (ApplicationContext db = new ApplicationContext())
@@ -86,7 +86,7 @@ namespace MTUAuthService.AuthService
         /// </summary>
         /// <param name="u"></param>
         /// <returns></returns>
-        public static async Task<User?> DoesUserExist(User u)
+        public static async Task<User?> GetRealUser(User u)
         {
             using (ApplicationContext db = new ApplicationContext())
             {
@@ -99,9 +99,8 @@ namespace MTUAuthService.AuthService
         {
             // Generate a shared secret for the user
             string sharedSecret = RandomProvider.GenerateRandomString(32);
-            // Store the shared secret in the user's database record
-            // StoreSharedSecretInDatabase(username, sharedSecret);
 
+            // Store the shared secret in the user's database record
             using (ApplicationContext db = new ApplicationContext())
             {
                 user.TwoFASecret = sharedSecret;

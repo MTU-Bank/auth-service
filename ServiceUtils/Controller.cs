@@ -69,36 +69,41 @@ namespace MTUAuthService.ServiceUtils
         [Route(HttpVerbs.Post, "/api/2FA")]
         public async Task<AuthResult> TwoFAVerification([JsonData] TwoFARequest TwoFACode)
         {
-            // check if token is 2FA one and it hadn't expired
+            if (HttpContext.CurrentClaims is null)
+                return new AuthResult() { Success = false, Error = "Incorrect 2FA token" };
 
+            // check if token is 2FA one
+            var claims = HttpContext.CurrentClaims.Claims;
+            var claimType = claims.FirstOrDefault((z) => z.Type == "type");
+            if (Enum.Parse<TokenType>(claimType.Value) != TokenType.TwoFA)
+                return new AuthResult() { Success = false, Error = "Incorrect 2FA token" };
 
             // check the 2FA value provided by user
-            /*var checkValue = UserManager.VerifyOTP(userToken.Owner, TwoFACode.TwoFAValue);
+            var checkValue = UserManager.VerifyOTP(HttpContext.CurrentUser, TwoFACode.TwoFAValue);
             if (!checkValue) return new AuthResult() { Success = false, Error = "OTP is incorrect" };
 
+            // get the proper user from the database, we won't need the abstract one
+            var realUser = await UserManager.GetRealUser(HttpContext.CurrentUser);
+
             // generate a proper token for this user
-            var newToken = await UserManager.IssueTokenForUser(userToken.Owner, TokenType.Active);
+            var newToken = await UserManager.IssueTokenForUser(realUser, TokenType.Active);
 
             // generate authresult
-            var ar = new AuthResult(userToken.Owner);
-            ar.Success = true;
-            ar.Token = newToken.TokenValue;
+            var ar = new AuthResult(HttpContext.CurrentUser);
+            ar.Success = true; ar.Token = newToken;
 
-            return ar;*/
-            return null;
+            return ar;
         }
 
         [Route(HttpVerbs.Post, "/api/set2FA")]
+        [RequiresAuth]
         public async Task<AuthResult> SetTwoFAStatus([JsonData] Set2FAStatus TwoFACode)
         {
-            // ensure user has correct data
-            /*var userToken = await CurrentToken;
-            if (userToken is null || !userToken.IsAuthed) return new AuthResult() { Success = false, Error = "Not authorized" };
+            var realUser = await UserManager.GetRealUser(HttpContext.CurrentUser);
 
             // set a 2FA token and show it to the user
-            var token = await UserManager.Change2FAStatus(userToken.Owner, TwoFACode.NewStatus);
-            return token;*/
-            return null;
+            var token = await UserManager.Change2FAStatus(realUser, TwoFACode.NewStatus);
+            return token;
         }
     }
 }

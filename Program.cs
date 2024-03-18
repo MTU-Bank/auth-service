@@ -6,6 +6,8 @@ using MTUBankBase.Config;
 using MTUBankBase.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using System.Text;
+using MTUModelContainer;
 
 namespace MTUAuthService
 {
@@ -29,7 +31,7 @@ namespace MTUAuthService
             var bytes = Convert.FromBase64String(strip);
 
             rsa.ImportRSAPrivateKey(bytes, out _);
-            jwtService = new JwtService("MTUAuth", new RsaSecurityKey(rsa), serviceConfig.BindToken);
+            jwtService = new JwtService("MTUBank", JwtKeyGenerator.GetSecurityKey(serviceConfig.BindToken));
 
 
             // init the service
