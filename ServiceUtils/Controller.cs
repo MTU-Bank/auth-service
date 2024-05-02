@@ -66,6 +66,16 @@ namespace MTUAuthService.ServiceUtils
             return ar;
         }
 
+        [Route(HttpVerbs.Post, "/api/getCurrentUser")]
+        [RequiresAuth]
+        public async Task<User> GetCurrentUser()
+        {
+            var realUser = await UserManager.GetRealUser(HttpContext.CurrentUser);
+
+            return realUser;
+        }
+
+
         [Route(HttpVerbs.Post, "/api/2FA")]
         public async Task<AuthResult> TwoFAVerification([JsonData] TwoFARequest TwoFACode)
         {

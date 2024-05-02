@@ -24,11 +24,12 @@ namespace MTUAuthService
             // "User" -> "OwnerId" (Account)
             modelBuilder.Entity<Account>()
                 .HasOne(a => a.User)
-                .WithMany()
+                .WithMany(a => a.Accounts)
                 .HasForeignKey(a => a.OwnerId)
                 .IsRequired();
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Account> Accounts { get; set; }
     }
 }

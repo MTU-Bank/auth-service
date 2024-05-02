@@ -22,17 +22,7 @@ namespace MTUAuthService
             serviceConfig = ServiceConfig.Load("auth_config.json");
 
             // build JWT Service
-            var rsa = RSA.Create(2048);
-            var privateKeyStr = File.ReadAllText(serviceConfig.PrivateKeyPath);
-            // strip the header and footer
-            var strip = new string(privateKeyStr.ToList()
-                                                .GetRange(31, privateKeyStr.Length - 31 - 31)
-                                                .ToArray());
-            var bytes = Convert.FromBase64String(strip);
-
-            rsa.ImportRSAPrivateKey(bytes, out _);
             jwtService = new JwtService("MTUBank", JwtKeyGenerator.GetSecurityKey(serviceConfig.BindToken));
-
 
             // init the service
             ServiceInitializer.InitService();

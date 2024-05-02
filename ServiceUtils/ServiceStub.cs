@@ -15,7 +15,7 @@ namespace MTUAuthService.ServiceUtils
 {
     public class ServiceStub : WebApiController
     {
-        public string Name { get; } = "MTU Bank Auth Service";
+        public string Name { get; } = "MTUBank Auth Service";
         public string Description { get; } = "This service concludes authentication, authorization and identification of users.";
         public string BaseUrl { get; } = WebControllerMethods.BindString(Program.serviceConfig.Hostname, Program.serviceConfig.Port);
         public ServiceType ServiceType { get; } = ServiceType.Auth;

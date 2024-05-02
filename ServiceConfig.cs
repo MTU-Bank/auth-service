@@ -13,7 +13,7 @@ namespace MTUAuthService
         public string dbHost { get; set; } = "nk.ax";
         public int dbPort { get; set; } = 3306;
         public string dbUser { get; set; } = "mtubank";
-        public string dbPass { get; set; }
+        public string dbPass { get; set; } = "_sSlf0kc84_kCX_s";
         public string dbName { get; set; } = "mtubank";
 
         [JsonIgnore]
@@ -21,7 +21,5 @@ namespace MTUAuthService
         {
             get { return $"Server={dbHost};Database={dbName};User={dbUser};Password={dbPass};"; }
         }
-
-        public string PrivateKeyPath { get; set; } = "priv.pem";
     }
 }
