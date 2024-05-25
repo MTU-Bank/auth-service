@@ -63,7 +63,7 @@ namespace MTUAuthService.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("accounts");
+                    b.ToTable("accounts", (string)null);
                 });
 
             modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>
@@ -135,7 +135,7 @@ namespace MTUAuthService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("MTUModelContainer.Database.Models.Account", b =>

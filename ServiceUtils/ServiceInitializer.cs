@@ -44,7 +44,7 @@ namespace MTUAuthService.ServiceUtils
                 // create request object
                 var request = new RegisterRequest()
                 { 
-                    BaseUrl = LocalService.BaseUrl,
+                    BaseUrl = Program.serviceConfig.BaseURL,
                     Name = LocalService.Name,
                     PairToken = Program.serviceConfig.BindToken
                 };

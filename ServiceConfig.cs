@@ -9,6 +9,7 @@ namespace MTUAuthService
         public int Port { get; set; } = 8091;
         public string CoreURL { get; set; } = "http://127.0.0.1:8090";
         public string BindToken { get; set; }
+        public string BaseURL { get; set; } = $"http://127.0.0.1:8091";
 
         public string dbHost { get; set; } = "nk.ax";
         public int dbPort { get; set; } = 3306;
