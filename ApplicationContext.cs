@@ -19,16 +19,6 @@ namespace MTUAuthService
             );
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // "User" -> "OwnerId" (Account)
-            modelBuilder.Entity<Account>()
-                .HasOne(a => a.User)
-                .WithMany(a => a.Accounts)
-                .HasForeignKey(a => a.OwnerId)
-                .IsRequired();
-        }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Account> Accounts { get; set; }
     }

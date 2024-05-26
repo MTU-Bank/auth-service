@@ -17,7 +17,7 @@ namespace MTUAuthService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -46,9 +46,13 @@ namespace MTUAuthService.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("name");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("defaultAccount");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("longtext")
                         .HasColumnName("owner_id");
 
                     b.Property<bool>("SystemLocked")
@@ -61,9 +65,7 @@ namespace MTUAuthService.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("accounts", (string)null);
+                    b.ToTable("accounts");
                 });
 
             modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>
@@ -135,23 +137,7 @@ namespace MTUAuthService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("MTUModelContainer.Database.Models.Account", b =>
-                {
-                    b.HasOne("MTUModelContainer.Database.Models.User", "User")
-                        .WithMany("Accounts")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>
-                {
-                    b.Navigation("Accounts");
+                    b.ToTable("users");
                 });
 #pragma warning restore 612, 618
         }

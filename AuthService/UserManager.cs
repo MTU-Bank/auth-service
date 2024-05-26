@@ -90,7 +90,7 @@ namespace MTUAuthService.AuthService
         {
             using (ApplicationContext db = new ApplicationContext())
             {
-                var possibleUser = from z in db.Users.Include(z => z.Accounts) where z.Id == u.Id || z.PhoneNum == u.PhoneNum || z.Email == u.Email select z;
+                var possibleUser = from z in db.Users where z.Id == u.Id || z.PhoneNum == u.PhoneNum || z.Email == u.Email select z;
                 return await possibleUser.FirstOrDefaultAsync();
             }
         }

@@ -12,20 +12,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MTUAuthService.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240310154107_InitialAuth")]
-    partial class InitialAuth
+    [Migration("20240526184150_AddedDefaultAccounts")]
+    partial class AddedDefaultAccounts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("MTUBankBase.Database.Models.Account", b =>
+            modelBuilder.Entity("MTUModelContainer.Database.Models.Account", b =>
                 {
                     b.Property<string>("AccountId")
                         .HasColumnType("varchar(255)")
@@ -36,21 +36,31 @@ namespace MTUAuthService.Migrations
                         .HasColumnType("VARCHAR(32)")
                         .HasColumnName("currency");
 
+                    b.Property<long>("Balance")
+                        .HasColumnType("bigint")
+                        .HasColumnName("balance");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("creationDate");
 
+                    b.Property<string>("FriendlyName")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("defaultAccount");
+
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("longtext")
                         .HasColumnName("owner_id");
 
                     b.Property<bool>("SystemLocked")
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("systemLocked");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
 
                     b.Property<bool>("UserLocked")
                         .HasColumnType("tinyint(1)")
@@ -58,40 +68,10 @@ namespace MTUAuthService.Migrations
 
                     b.HasKey("AccountId");
 
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("accounts");
                 });
 
-            modelBuilder.Entity("MTUBankBase.Database.Models.Token", b =>
-                {
-                    b.Property<string>("TokenValue")
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("token");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("creationDate");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("owner");
-
-                    b.Property<int>("TokenType")
-                        .HasColumnType("int")
-                        .HasColumnName("type");
-
-                    b.HasKey("TokenValue");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("tokens");
-                });
-
-            modelBuilder.Entity("MTUBankBase.Database.Models.User", b =>
+            modelBuilder.Entity("MTUModelContainer.Database.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)")
@@ -105,6 +85,14 @@ namespace MTUAuthService.Migrations
                         .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("email");
+
+                    b.Property<string>("EmailVerificationCode")
+                        .HasColumnType("longtext")
+                        .HasColumnName("emailVerifCode");
+
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("emailVerif");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -130,8 +118,15 @@ namespace MTUAuthService.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("phoneNum");
 
+                    b.Property<string>("PhoneVerificationCode")
+                        .HasColumnType("longtext")
+                        .HasColumnName("phoneVerifCode");
+
+                    b.Property<bool>("PhoneVerified")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("phoneVerif");
+
                     b.Property<string>("Sex")
-                        .IsRequired()
                         .HasColumnType("varchar(8)")
                         .HasColumnName("sex");
 
@@ -146,35 +141,6 @@ namespace MTUAuthService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users");
-                });
-
-            modelBuilder.Entity("MTUBankBase.Database.Models.Account", b =>
-                {
-                    b.HasOne("MTUBankBase.Database.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MTUBankBase.Database.Models.User", null)
-                        .WithMany("Accounts")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("MTUBankBase.Database.Models.Token", b =>
-                {
-                    b.HasOne("MTUBankBase.Database.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("MTUBankBase.Database.Models.User", b =>
-                {
-                    b.Navigation("Accounts");
                 });
 #pragma warning restore 612, 618
         }
