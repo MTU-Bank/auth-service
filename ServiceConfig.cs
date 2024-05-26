@@ -1,5 +1,5 @@
 ﻿using MTUBankBase.Config;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace MTUAuthService
 {
